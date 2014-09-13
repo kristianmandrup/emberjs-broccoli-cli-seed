@@ -7,4 +7,4 @@ var appCss      = Broc.stylesheets.appCss;
 var appJs       = Broc.application.appJs;
 var publicTree  = Broc.application.publicTree;
 
-module.exports = mergeTrees([publicTree, appCss, appJs]);
+module.exports = mergeTrees([publicTree, appCss, appJs]); 

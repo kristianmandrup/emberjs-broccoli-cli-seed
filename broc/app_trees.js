@@ -8,33 +8,36 @@ config = function(name) {
     srcDir: '/',
     destDir: name
   });    
-},  
+};  
 
 tree = function(name) {
   return function() {
-    return this.resolved = this.resolved || preprocess(this.config(name));  
+    return preprocess(config(name));  
   }
-},
+};
 
-
-module.exports = {
+var trees = {
   appTree: tree('app'),
   configTree: tree('config'),
   testsTree: tree('tests'),  
   vendorTree: 'vendor',
-  publicTree: 'public',
+  publicTree: 'public'
+}
 
-  appAndVendor: { 
-    baseTrees: [this.appTree, this.configTree, this.vendorTree, this.publicTree],
+trees.appAndVendor = { 
+  baseTrees: function() {
+    return [trees.appTree(), trees.configTree(), trees.vendorTree, trees.publicTree];
+  },
 
-    allTrees: function() { 
-      return this.baseTrees.concat(findBowerTrees()); 
-    },
-    merged: function() {
-      return mergeTrees(this.allTrees(), {overwrite: true});
-    },
-    tree: function() {
-      return this.resolved = this.resolved || this.merged();
-    }
+  allTrees: function() { 
+    return this.baseTrees().concat(findBowerTrees()); 
+  },
+  mergedTrees: function() {
+    return mergeTrees(this.allTrees(), {overwrite: true});
+  },
+  tree: function() {
+    return this.resolved = this.resolved || this.mergedTrees();
   }
 };
+
+module.exports = trees;

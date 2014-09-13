@@ -3,20 +3,15 @@ var compileES6        = require('broccoli-es6-concatenator');
 
 var env               = process.env.BROCCOLI_ENV || 'development';
 
-var appAndVendorTree  = require('./app_trees').appAndVendor.tree();
-var append            = require('./append');
-
-var inputFiles        = ['app/**/*.js'];
-
-module.exports = {
-  config: {
+var appJs = {
+  config: {    
     ES6: {
       loaderFile: 'loader-js/loader.js',
       ignoredModules: [
         'ember/resolver'
       ],
-      inputFiles: inputFiles,
-      legacyFilesToAppend: append.appFiles,
+      inputFiles: ['app/**/*.js'],
+      legacyFilesToAppend: require('./append').appFiles,
       wrapInEval: env !== 'production',
       outputFile: '/assets/app.js'
     },
@@ -26,8 +21,12 @@ module.exports = {
     }
   },
 
-  default: function() {
-    return compileES6(appAndVendorTree, this.config.ES6);
+  appAndVendorTree: function() {
+    return require('./app_trees').appAndVendor.tree();  
+  },
+
+  default: function() {    
+    return compileES6(this.appAndVendorTree(), this.config.ES6);
   },
 
   production: function() {
@@ -35,7 +34,10 @@ module.exports = {
     return uglifyJavaScript(this.default(), this.config.uglify);    
   },
 
-  compile: function() {
-    this.production() || this.default();
+  compiled: function() {
+    return this.production() || this.default();
   }
-}
+};
+
+module.exports = appJs;
+

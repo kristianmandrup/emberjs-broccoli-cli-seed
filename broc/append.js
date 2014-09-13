@@ -16,14 +16,12 @@ var append = {
     'ember-qunit/dist/globals/main.js',
     'jquery-mockjax/jquery.mockjax.js',
     'tests/test_helper.js'
-  ]
+  ]  
 };
 
-var trees = require('./app_trees')
-
 if (env === 'test') {
-  trees.appAndVendor.tree().unshift(trees.testsTree);
-  inputFiles.unshift('tests/*/*.js');
+  var trees = require('./app_trees');
+  trees.appAndVendor.tree().unshift(trees.testsTree());
   append.appFiles = append.appFiles.concat(append.testFiles);
 }
 
