@@ -19,8 +19,10 @@ var append = {
   ]
 };
 
+var trees = require('./app_trees')
+
 if (env === 'test') {
-  trees.appAndVendorTree.unshift(trees.testsTree);
+  trees.appAndVendor.tree().unshift(trees.testsTree);
   inputFiles.unshift('tests/*/*.js');
   append.appFiles = append.appFiles.concat(append.testFiles);
 }
