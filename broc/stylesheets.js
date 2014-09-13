@@ -12,6 +12,29 @@ var PreProcess      = require('./preprocess');
 // Stylesheets
 //
 
+var picked = function() {
+  return pickFiles(Stylesheets.config.cssTree, {
+    srcDir: '/',
+    files: ['app.less'],
+    destDir: 'assets'
+  });
+}
+
+var merged = function(appCss) {
+  return mergeTrees([appCss].concat(bowerTrees), {overwrite: true});    
+}
+
+var preprocessed = function(appCss) {
+  return PreProcess.run(appCss);
+}
+
+var asOneFile = function(appCss) {
+  return concatFiles(appCss, {
+    inputFiles: Stylesheets.config.cssFiles,
+    outputFile: '/assets/app.css'
+  });    
+}
+
 var Stylesheets = {
   config: {
     cssTree: 'stylesheets',
@@ -21,31 +44,11 @@ var Stylesheets = {
     ]
   },
 
-  picked: function() {
-    return pickFiles(this.config.cssTree, {
-      srcDir: '/',
-      files: ['app.less'],
-      destDir: 'assets'
-    });
-  },
-  merged: function(appCss) {
-    return mergeTrees([appCss].concat(bowerTrees), {overwrite: true});    
-  },
-  preprocessed: function(appCss) {
-    return PreProcess.run(appCss);
-  },
-  asOneFile: function(appCss) {
-    return concatFiles(appCss, {
-      inputFiles: this.config.cssFiles,
-      outputFile: '/assets/app.css'
-    });    
-  },
-
   appCss: function() {
     if (env !== 'test') {
       this.config.cssFiles.shift();
     }
-    return this.asOneFile(this.preprocessed(this.merged(this.picked())));
+    return asOneFile(preprocessed(merged(picked())));
   }
 };
 
