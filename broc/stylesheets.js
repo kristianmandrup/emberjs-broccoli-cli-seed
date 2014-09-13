@@ -7,36 +7,49 @@ var bowerTrees      = findBowerTrees();
 var env             = process.env.BROCCOLI_ENV || 'development';
 
 var PreProcess      = require('./preprocess');
+
 //
 // Stylesheets
 //
-var appCss    = null;
-var cssTree   = 'stylesheets';
-var cssFiles  = [
-  'qunit.css',
-  'assets/app.css'
-];
 
-appCss = pickFiles(cssTree, {
-  srcDir: '/',
-  files: ['app.less'],
-  destDir: 'assets'
-});
+var Stylesheets = {
+  config: {
+    cssTree: 'stylesheets',
+    cssFiles: [
+      'qunit.css',
+      'assets/app.css'
+    ]
+  },
 
-if (env !== 'test') {
-  cssFiles.shift();
-}
+  picked: function() {
+    return pickFiles(this.config.cssTree, {
+      srcDir: '/',
+      files: ['app.less'],
+      destDir: 'assets'
+    });
+  },
+  merged: function(appCss) {
+    return mergeTrees([appCss].concat(bowerTrees), {overwrite: true});    
+  },
+  preprocessed: function(appCss) {
+    return PreProcess.run(appCss);
+  },
+  asOneFile: function(appCss) {
+    return concatFiles(appCss, {
+      inputFiles: this.config.cssFiles,
+      outputFile: '/assets/app.css'
+    });    
+  },
 
-appCss = mergeTrees([appCss].concat(bowerTrees), {overwrite: true});
-appCss = PreProcess.run(appCss);
-
-appCss = concatFiles(appCss, {
-  inputFiles: cssFiles,
-  outputFile: '/assets/app.css'
-});
+  appCss: function() {
+    if (env !== 'test') {
+      this.config.cssFiles.shift();
+    }
+    return this.asOneFile(this.preprocessed(this.merged(this.picked())));
+  }
+};
 
 module.exports = {
-  cssTree:  cssTree,
-  cssFiles: cssFiles,
-  appCss:   appCss
+  config:  Stylesheets.config,
+  appCss:  Stylesheets.appCss()
 };
