@@ -10,7 +10,7 @@ var next = function(name, res) {
 };
 
 var PreProcess = {
-  filters: ['less', 'coffee', 'templates'],
+  filters: require('./config').preprocess.filters,
   
   run: function(tree, filters) {
     var useFilters = (filters || this.filters).slice(0);

@@ -36,20 +36,13 @@ var asOneFile = function(appCss) {
 }
 
 var Stylesheets = {
-  config: {
-    cssTree: 'stylesheets',
-    cssFiles: [
-      'qunit.css',
-      'assets/app.css'
-    ]
-  },
-
   appCss: function() {
     if (env !== 'test') {
       this.config.cssFiles.shift();
     }
     return asOneFile(preprocessed(merged(picked())));
-  }
+  },
+  config: require('./config').stylesheets
 };
 
 module.exports = {
