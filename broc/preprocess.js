@@ -1,31 +1,32 @@
-var filterTemplates     = require('broccoli-template');
-var filterCoffeeScript  = require('broccoli-coffee');
-var filterLess          = require('broccoli-less');
+var Filter = require('./filters');
 
-var env = process.env.BROCCOLI_ENV || 'development';
+var next = function(name, res) {  
+  var fobj = Filter[name];
+  if (typeof fobj == 'undefined') {
+    console.log('WARNING: undefined filter: ' + name + ' skipped!!')
+    return res;
+  }    
+  return fobj.run(res);
+};
 
-function preprocess(tree) {
-  var templates = function() {
-    return filterTemplates(tree, {
-      extensions: ['hbs', 'handlebars'],
-      compileFunction: 'Ember.Handlebars.compile'
-    });
-  };
+var PreProcess = {
+  filters: ['less', 'coffee', 'templates'],
+  
+  run: function(tree, filters) {
+    var useFilters = (filters || this.filters).slice(0);
 
-  var coffee = function() {
-    return filterCoffeeScript(tree, {
-      bare: true
-    });
-  };
+    var use = function(res, _filters) {
+      if (_filters.length == 0) {
+        return res;
+      } else {
+        var nextName = _filters.pop();
+        return use(next(nextName, res), _filters);        
+      }
+    };
 
-  var less = function(tree) {
-    return filterLess(tree, {
-      compress: env === 'production',
-      paths: ['.', './stylesheets', './vendor/bootstrap/less']
-    });
-  };
-
-  return less(coffee(templates(tree)));
+    var firstRes = next(useFilters.pop(), tree);
+    return use(firstRes, useFilters);
+  }
 }
 
-module.exports = preprocess
+module.exports = PreProcess

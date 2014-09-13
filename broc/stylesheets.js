@@ -6,7 +6,7 @@ var concatFiles     = require('broccoli-concat');
 var bowerTrees      = findBowerTrees();
 var env             = process.env.BROCCOLI_ENV || 'development';
 
-var preprocess      = require('./preprocess');
+var PreProcess      = require('./preprocess');
 //
 // Stylesheets
 //
@@ -28,7 +28,7 @@ if (env !== 'test') {
 }
 
 appCss = mergeTrees([appCss].concat(bowerTrees), {overwrite: true});
-appCss = preprocess(appCss);
+appCss = PreProcess.run(appCss);
 
 appCss = concatFiles(appCss, {
   inputFiles: cssFiles,

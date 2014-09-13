@@ -1,4 +1,5 @@
-var preprocess        = require('./preprocess');
+var PreProcess        = require('./preprocess');
+
 var pickFiles         = require('broccoli-static-compiler');
 var mergeTrees        = require('broccoli-merge-trees');
 var findBowerTrees    = require('broccoli-bower');
@@ -12,7 +13,7 @@ config = function(name) {
 
 tree = function(name) {
   return function() {
-    return preprocess(config(name));  
+    return PreProcess.run(config(name));  
   }
 };
 
