@@ -1,5 +1,7 @@
 # Ember.js boilerplate using Broccoli
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kristianmandrup/emberjs-broccoli-cli-seed.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/iMedicare/emberjs-broccoli-boilerplate.png?branch=master)](https://travis-ci.org/iMedicare/emberjs-broccoli-boilerplate)
 
 Read [the introductory post](http://ampersate.com/getting-started-with-broccoli-and-emberjs).
